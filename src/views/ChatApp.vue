@@ -65,15 +65,12 @@ function handleClearMessages() {
 }
 
 function handleSendMessage(content: string) {
-  if (content.trim() !== "") {
-    const message: Message = {
-      id: Date.now().toString(),
-      username: state.username,
-      content,
-      group: state.group,
-    };
-    db.ref(`messages/${state.group}`).push(message);
-  }
+  const message: Message = {
+    id: Date.now().toString(),
+    username: state.username,
+    content,
+  };
+  db.ref(`messages/${state.group}`).push(message);
 }
 
 function loadMessages(group: string) {
@@ -83,13 +80,11 @@ function loadMessages(group: string) {
     const messages: Message[] = [];
     if (data) {
       Object.keys(data).forEach((key) => {
-        if (data[key].group === group) {
-          messages.push({
-            id: key,
-            username: data[key].username,
-            content: data[key].content,
-          });
-        }
+        messages.push({
+          id: key,
+          username: data[key].username,
+          content: data[key].content,
+        });
       });
     }
     state.messages = messages;

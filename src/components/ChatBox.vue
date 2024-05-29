@@ -46,7 +46,7 @@ interface Message {
   content: string;
 }
 
-const props = defineProps<{
+defineProps<{
   username: string;
   group: string;
   messages: Message[];
@@ -69,9 +69,6 @@ function sendMessage() {
   }
 }
 </script>
-
-
-
 
 <style lang="scss" scoped>
 .chat-box {
