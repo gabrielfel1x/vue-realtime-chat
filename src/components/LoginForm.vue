@@ -9,12 +9,6 @@
           type="text"
           placeholder="Type your name..."
         />
-        <label for="group">Group</label>
-        <select v-model="inputGroup">
-          <option value="general">General</option>
-          <option value="sports">Sports</option>
-          <option value="technology">Technology</option>
-        </select>
         <input type="submit" value="Login" />
       </div>
     </form>
@@ -25,13 +19,12 @@
 import { ref } from "vue";
 
 const inputUsername = ref("");
-const inputGroup = ref("general");
 
 const emit = defineEmits(["onLogin"]);
 
 function login() {
   if (inputUsername.value) {
-    emit("onLogin", { username: inputUsername.value, group: inputGroup.value });
+    emit("onLogin", { username: inputUsername.value });
     inputUsername.value = "";
   }
 }
