@@ -1,0 +1,94 @@
+<template>
+  <div class="login-form">
+    <form @submit.prevent="login">
+      <div class="form-inner">
+        <h1>Login</h1>
+        <label for="username">Username</label>
+        <input
+          v-model="inputUsername"
+          type="text"
+          placeholder="Type your name..."
+        />
+        <label for="group">Group</label>
+        <select v-model="inputGroup">
+          <option value="general">General</option>
+          <option value="sports">Sports</option>
+          <option value="technology">Technology</option>
+        </select>
+        <input type="submit" value="Login" />
+      </div>
+    </form>
+  </div>
+</template>
+  
+<script setup lang="ts">
+import { ref } from "vue";
+
+const inputUsername = ref("");
+const inputGroup = ref("general");
+
+const emit = defineEmits(["onLogin"]);
+
+function login() {
+  if (inputUsername.value) {
+    emit("onLogin", { username: inputUsername.value, group: inputGroup.value });
+    inputUsername.value = "";
+  }
+}
+</script>
+  
+<style lang="scss" scoped>
+.login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+
+  .form-inner {
+    background-color: #fff;
+    padding: 50px 15px;
+    border-radius: 16px;
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+
+    h1 {
+      color: #aaa;
+      font-size: 28px;
+      margin-bottom: 30px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #aaa;
+      font-size: 16px;
+      transition: 0.4s;
+    }
+
+    input[type="text"],
+    select,
+    input[type="submit"] {
+      display: block;
+      width: 100%;
+      padding: 10px 15px;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 8px;
+    }
+
+    input[type="submit"] {
+      background-color: #4d6a6d;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    input[type="text"],
+    select {
+      background-color: #f3f3f3;
+      color: #333;
+      font-size: 18px;
+    }
+  }
+}
+</style>

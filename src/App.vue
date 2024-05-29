@@ -1,9 +1,9 @@
 <template>
   <div>
-    <Home />
+    <ChatApp />
   </div>
 </template>
 
 <script setup>
-import Home from "./components/Home.vue";
+import ChatApp from "./views/ChatApp.vue";
 </script>
