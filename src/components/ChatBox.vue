@@ -36,7 +36,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
+// @ts-ignore
+import db from "../db";
 
 const inputMessage = ref("");
 
@@ -46,28 +49,65 @@ interface Message {
   content: string;
 }
 
-defineProps<{
-  username: string;
-  group: string;
-  messages: Message[];
-}>();
+const route = useRoute();
+const router = useRouter();
+const username = route.query.username as string;
+const group = route.query.group as string;
 
-const emit = defineEmits(["onLogout", "onClearMessages", "onSendMessage"]);
+const messages = ref<Message[]>([]);
 
 function logout() {
-  emit("onLogout");
+  router.push({ name: "Login" });
 }
 
 function clearMessages() {
-  emit("onClearMessages");
+  if (group) {
+    db.ref(`messages/${group}`)
+      .remove()
+      .then(() => {
+        messages.value = [];
+      })
+      .catch((error: any) => {
+        console.error("Error removing messages: ", error);
+      });
+  }
 }
 
 function sendMessage() {
   if (inputMessage.value.trim() !== "") {
-    emit("onSendMessage", inputMessage.value.trim());
+    const message: Message = {
+      id: Date.now().toString(),
+      username,
+      content: inputMessage.value.trim(),
+    };
+    db.ref(`messages/${group}`).push(message);
     inputMessage.value = "";
   }
 }
+
+function loadMessages(group: string) {
+  const messagesRef = db.ref(`messages/${group}`);
+  messagesRef.on("value", (snapshot: any) => {
+    const data = snapshot.val();
+    const msgs: Message[] = [];
+    if (data) {
+      Object.keys(data).forEach((key) => {
+        msgs.push({
+          id: key,
+          username: data[key].username,
+          content: data[key].content,
+        });
+      });
+    }
+    messages.value = msgs;
+  });
+}
+
+onMounted(() => {
+  if (group) {
+    loadMessages(group);
+  }
+});
 </script>
 
 <style lang="scss" scoped>
@@ -75,7 +115,7 @@ function sendMessage() {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: #f9f9f9;
+  background-color: #ece5dd;
   font-family: Arial, sans-serif;
 
   header {

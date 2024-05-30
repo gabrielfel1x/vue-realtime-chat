@@ -14,22 +14,26 @@
     </form>
   </div>
 </template>
-  
+
 <script setup lang="ts">
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 
 const inputUsername = ref("");
-
-const emit = defineEmits(["onLogin"]);
+const router = useRouter();
 
 function login() {
   if (inputUsername.value) {
-    emit("onLogin", { username: inputUsername.value });
+    router.push({
+      name: "GroupSelection",
+      query: { username: inputUsername.value },
+    });
     inputUsername.value = "";
   }
 }
 </script>
-  
+
+
 <style lang="scss" scoped>
 .login-form {
   display: flex;
@@ -57,10 +61,8 @@ function login() {
       font-size: 16px;
       transition: 0.4s;
     }
-
-    input[type="text"],
     select,
-    input[type="submit"] {
+    input {
       display: block;
       width: 100%;
       padding: 10px 15px;
