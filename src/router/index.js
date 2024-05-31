@@ -16,7 +16,7 @@ const routes = [
     component: GroupSelection,
     props: (route) => ({
       username: route.query.username,
-      groups: ["grupo da familia", "projeto filipe", "programadores"],
+      groups: ["Vue Brasil", "Grupo Amigos", "Viagem"],
     }),
   },
   {

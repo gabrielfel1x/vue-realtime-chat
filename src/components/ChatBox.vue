@@ -1,8 +1,9 @@
 <template>
   <div class="chat-box">
     <header>
-      <h1>Welcome, {{ username }} in {{ group }}</h1>
-      <div class="header-buttons ml-4">
+      <h1>Welcome, {{ username }}</h1>
+      <div>In group: {{ group }}</div>
+      <div class="header-buttons">
         <button class="clear" @click="clearMessages">Clear Messages</button>
         <button class="logout" @click="logout">Logout</button>
       </div>
@@ -111,29 +112,39 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+$background-color: #dad3be;
+$text-color: #fff;
+$primary-button-color: #333;
+$hover-button-color: #555;
+$message-background: #444;
+$message-hover: #667;
+$secondary-background-color: #6b8a7a;
+$font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
 .chat-box {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: #ece5dd;
-  font-family: Arial, sans-serif;
+  background-color: $background-color;
+  font-family: $font-family;
 
   header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
     padding: 20px;
-    background-color: #4d6a6d;
+    background-color: $secondary-background-color;
     color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
     h1 {
       margin: 0;
-      font-size: 24px;
+      margin-bottom: 10px;
+      font-size: 20px;
     }
 
     .header-buttons {
       display: flex;
+      justify-content: flex-end;
       gap: 10px;
 
       button {
@@ -142,7 +153,7 @@ onMounted(() => {
         color: white;
         padding: 5px 10px;
         cursor: pointer;
-        border-radius: 5px;
+        border-radius: 8px;
         transition: background-color 0.3s, color 0.3s;
 
         &:hover {
@@ -169,8 +180,8 @@ onMounted(() => {
         justify-content: flex-end;
 
         .message-inner {
-          background-color: #4d6a6d;
-          color: white;
+          background-color: #6b8a7a;
+          color: $text-color;
           text-align: right;
         }
       }
@@ -179,7 +190,8 @@ onMounted(() => {
         max-width: 60%;
         padding: 10px 15px;
         border-radius: 10px;
-        background-color: #e0e0e0;
+        background-color: $message-background;
+        color: $text-color;
 
         .username {
           font-weight: bold;
@@ -195,7 +207,7 @@ onMounted(() => {
 
   footer {
     padding: 20px;
-    background-color: white;
+    background-color: $secondary-background-color;
     box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1);
 
     form {
@@ -206,8 +218,10 @@ onMounted(() => {
       input[type="text"] {
         flex: 1;
         padding: 10px 15px;
-        border: 2px solid #ddd;
+        border: transparent;
         border-radius: 20px;
+        background-color: $background-color;
+        color: #254336;
         outline: none;
         font-size: 16px;
       }
@@ -216,14 +230,15 @@ onMounted(() => {
         padding: 10px 20px;
         border: none;
         border-radius: 20px;
-        background-color: #4d6a6d;
-        color: white;
+        background-color: $text-color;
+        color: #254336;
         font-size: 16px;
         cursor: pointer;
         transition: background-color 0.3s;
 
         &:hover {
-          background-color: #3a5252;
+          background-color: #254336;
+          color: $background-color;
         }
       }
     }
