@@ -44,6 +44,7 @@
   </div>
 </template>
 
+
 <script setup lang="ts">
 import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -60,8 +61,8 @@ interface Message {
 
 const route = useRoute();
 const router = useRouter();
-const username = route.query.username as string;
-const group = route.query.group as string;
+const username = ref<string | null>(null);
+const group = ref<string | null>(null);
 
 const messages = ref<Message[]>([]);
 const messagesContainer = ref<HTMLElement | null>(null);
@@ -91,8 +92,8 @@ function logout() {
 }
 
 function clearMessages() {
-  if (group) {
-    db.ref(`messages/${group}`)
+  if (group.value) {
+    db.ref(`messages/${group.value}`)
       .remove()
       .then(() => {
         messages.value = [];
@@ -105,21 +106,26 @@ function clearMessages() {
 }
 
 function returnGroup() {
-  router.push({ name: "GroupSelection" });
+  const username = route.query.username as string;
+  if (username) {
+    router.push({ name: "GroupSelection", query: { username } });
+  } else {
+    router.push({ name: "Login" });
+  }
 }
 
 function sendMessage() {
   if (inputMessage.value.trim() !== "") {
-    if (!username) {
+    if (!username.value) {
       console.error("Username is undefined");
       return;
     }
     const message: Message = {
       id: Date.now().toString(),
-      username,
+      username: username.value,
       content: inputMessage.value.trim(),
     };
-    db.ref(`messages/${group}`)
+    db.ref(`messages/${group.value}`)
       .push(message)
       .catch((error: any) => {
         console.error("Error sending message: ", error);
@@ -147,15 +153,27 @@ function loadMessages(group: string) {
   });
 }
 
-onMounted(() => {
-  if (!username) {
+function initializeChat() {
+  username.value = route.query.username as string | null;
+  group.value = route.query.group as string | null;
+
+  if (!username.value) {
     console.error("Username is undefined");
     router.push({ name: "Login" });
     return;
   }
-  if (group) {
-    loadMessages(group);
+
+  if (group.value) {
+    loadMessages(group.value);
   }
+}
+
+onMounted(() => {
+  initializeChat();
+});
+
+watch(route, () => {
+  initializeChat();
 });
 
 watch(messages, () => {
@@ -297,21 +315,20 @@ $font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 
   .scroll-to-bottom {
     position: fixed;
-    bottom: 100px;
-    right: 50%;
+    bottom: 80px;
+    right: 20px;
     background-color: $secondary-background-color;
     color: $text-color;
     border: none;
     border-radius: 50%;
     width: 50px;
     height: 50px;
-    padding-top: 2px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 24px;
     cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s;
 
     &:hover {
