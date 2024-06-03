@@ -1,6 +1,7 @@
 <template>
   <div class="chat-box">
     <header>
+      <button class="mr-auto mb-4" @click="returnGroup">Return</button>
       <h1>Welcome, {{ username }}</h1>
       <div>In group: {{ group }}</div>
       <div class="header-buttons">
@@ -8,7 +9,7 @@
         <button class="logout" @click="logout">Logout</button>
       </div>
     </header>
-    <section class="messages">
+    <section class="messages" ref="messagesContainer">
       <div
         v-for="message in messages"
         :key="message.id"
@@ -33,11 +34,12 @@
         <input type="submit" value="Send" />
       </form>
     </footer>
+    <button class="scroll-to-bottom" @click="scrollToBottom">↓</button>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 // @ts-ignore
 import db from "../db";
@@ -56,6 +58,16 @@ const username = route.query.username as string;
 const group = route.query.group as string;
 
 const messages = ref<Message[]>([]);
+const messagesContainer = ref<HTMLElement | null>(null);
+
+function scrollToBottom() {
+  if (messagesContainer.value) {
+    messagesContainer.value.scrollTo({
+      top: messagesContainer.value.scrollHeight,
+      behavior: "smooth",
+    });
+  }
+}
 
 function logout() {
   router.push({ name: "Login" });
@@ -67,6 +79,7 @@ function clearMessages() {
       .remove()
       .then(() => {
         messages.value = [];
+        scrollToBottom();
       })
       .catch((error: any) => {
         console.error("Error removing messages: ", error);
@@ -74,14 +87,26 @@ function clearMessages() {
   }
 }
 
+function returnGroup() {
+  router.push({ name: "GroupSelection" });
+}
+
 function sendMessage() {
   if (inputMessage.value.trim() !== "") {
+    if (!username) {
+      console.error("Username is undefined");
+      return;
+    }
     const message: Message = {
       id: Date.now().toString(),
       username,
       content: inputMessage.value.trim(),
     };
-    db.ref(`messages/${group}`).push(message);
+    db.ref(`messages/${group}`)
+      .push(message)
+      .catch((error) => {
+        console.error("Error sending message: ", error);
+      });
     inputMessage.value = "";
   }
 }
@@ -101,13 +126,23 @@ function loadMessages(group: string) {
       });
     }
     messages.value = msgs;
+    scrollToBottom();
   });
 }
 
 onMounted(() => {
+  if (!username) {
+    console.error("Username is undefined");
+    router.push({ name: "Login" });
+    return;
+  }
   if (group) {
     loadMessages(group);
   }
+});
+
+watch(messages, () => {
+  scrollToBottom();
 });
 </script>
 
@@ -146,21 +181,20 @@ $font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
       display: flex;
       justify-content: flex-end;
       gap: 10px;
+    }
+  }
+  button {
+    background: none;
+    border: 2px solid white;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background-color 0.3s, color 0.3s;
 
-      button {
-        background: none;
-        border: 2px solid white;
-        color: white;
-        padding: 5px 10px;
-        cursor: pointer;
-        border-radius: 8px;
-        transition: background-color 0.3s, color 0.3s;
-
-        &:hover {
-          background-color: white;
-          color: #4d6a6d;
-        }
-      }
+    &:hover {
+      background-color: white;
+      color: #4d6a6d;
     }
   }
 
@@ -241,6 +275,30 @@ $font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
           color: $background-color;
         }
       }
+    }
+  }
+
+  .scroll-to-bottom {
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    background-color: $secondary-background-color;
+    color: $text-color;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    padding-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: $hover-button-color;
     }
   }
 }
