@@ -315,14 +315,15 @@ $font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 
   .scroll-to-bottom {
     position: fixed;
-    bottom: 80px;
-    right: 20px;
+    bottom: 100px;
+    right: 50%;
     background-color: $secondary-background-color;
     color: $text-color;
     border: none;
     border-radius: 50%;
     width: 50px;
     height: 50px;
+    padding-top: 2px;
     display: flex;
     align-items: center;
     justify-content: center;
