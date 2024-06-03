@@ -104,7 +104,7 @@ function sendMessage() {
     };
     db.ref(`messages/${group}`)
       .push(message)
-      .catch((error) => {
+      .catch((error: any) => {
         console.error("Error sending message: ", error);
       });
     inputMessage.value = "";
