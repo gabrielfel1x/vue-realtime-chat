@@ -9,7 +9,7 @@
         <button class="logout" @click="logout">Logout</button>
       </div>
     </header>
-    <section class="messages" ref="messagesContainer">
+    <section class="messages" ref="messagesContainer" @scroll="handleScroll">
       <div
         v-for="message in messages"
         :key="message.id"
@@ -34,7 +34,13 @@
         <input type="submit" value="Send" />
       </form>
     </footer>
-    <button class="scroll-to-bottom" @click="scrollToBottom">↓</button>
+    <button
+      v-show="!isAtBottom"
+      class="scroll-to-bottom"
+      @click="scrollToBottom"
+    >
+      ↓
+    </button>
   </div>
 </template>
 
@@ -59,6 +65,7 @@ const group = route.query.group as string;
 
 const messages = ref<Message[]>([]);
 const messagesContainer = ref<HTMLElement | null>(null);
+const isAtBottom = ref(true);
 
 function scrollToBottom() {
   if (messagesContainer.value) {
@@ -66,6 +73,16 @@ function scrollToBottom() {
       top: messagesContainer.value.scrollHeight,
       behavior: "smooth",
     });
+  }
+}
+
+function handleScroll() {
+  if (messagesContainer.value) {
+    const threshold = 10;
+    const position =
+      messagesContainer.value.scrollTop + messagesContainer.value.clientHeight;
+    const height = messagesContainer.value.scrollHeight;
+    isAtBottom.value = height - position < threshold;
   }
 }
 
@@ -281,7 +298,7 @@ $font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   .scroll-to-bottom {
     position: fixed;
     bottom: 100px;
-    right: 20px;
+    right: 50%;
     background-color: $secondary-background-color;
     color: $text-color;
     border: none;
