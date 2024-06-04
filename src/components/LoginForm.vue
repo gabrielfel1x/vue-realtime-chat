@@ -57,7 +57,7 @@ $font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     padding: 50px 30px;
     border-radius: 16px;
     box-shadow: 0px 6px 12px rgba(255, 255, 255, 0.02);
-    width: 90%;
+    width: 100%;
     max-width: 400px;
     text-align: center;
 
